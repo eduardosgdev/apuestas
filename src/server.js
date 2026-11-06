@@ -3,6 +3,7 @@ import { dataBase } from "./database/db.js";
 import cors from "cors";
 import teamRoutes from "./routes/teamRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
+import playerRoutes from "./routes/playerRoutes.js";
 
 const app = express();
 app.use(express.json())
@@ -11,6 +12,7 @@ app.use(express.json())
 
 app.use('/teams', teamRoutes);
 app.use('/matchs', matchRoutes);
+app.use('/players' ,playerRoutes)
 
 const port = process.env.PORT || 3000 ;
 app.listen (port)

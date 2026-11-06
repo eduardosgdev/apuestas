@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const matchSchema = mongoose.Schema({
+
+    competicion :{ type:String,
+    enum:['Liga','Copa','Champions','Euro']},
     team1:{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'team',
@@ -13,14 +16,27 @@ const matchSchema = mongoose.Schema({
         required:true,
         
     },
-    estiloteam1:{type:String,
-    enum:['posesion','bandas','bloquebajo','presion','contrataque'],
+    estiloofteam1:{type:String,
+    enum:['juego_interior','juego_directo','juego_exterior','contraataque'],
     required:true
     },
-    estiloteam2:{type:String,
-        enum:['posesion','bandas','bloquebajo','presion','contrataque'],
+    estilodefteam1:{ 
+        type:String,
+        enum:['presion_alta', 'bloque_medio', 'bloque_bajo'],
+        required:true
+
+    },
+    estiloofteam2:{type:String,
+        enum:['juego_interior','juego_directo','juego_exterior','contraataque'],
         required:true
         },
+    
+    estilodefteam2:{
+        type:String,
+        enum:['presion_alta', 'bloque_medio', 'bloque_bajo'],
+        required:true
+    },
+
 
     golesteam1: {
             type: Number,

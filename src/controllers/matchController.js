@@ -4,14 +4,17 @@ import matchModel from "../models/matchModel.js";
 export const createMatch = async (req, res) => {
     try {
         const {
+            competicion,
             team1,
             team2,
             golesteam1,
             golesteam2,
             cornersteam1,
             cornersteam2,
-            estiloteam1,
-            estiloteam2
+            estiloofteam1,
+            estiloofteam2,
+            estilodefteam1,
+            estilodefteam2
         } = req.body;
 
         // Comprobar que los equipos sean diferentes
@@ -22,14 +25,17 @@ export const createMatch = async (req, res) => {
         }
 
         const newMatch = new matchModel({
+            competicion,
             team1,
             team2,
             golesteam1,
             golesteam2,
             cornersteam1,
             cornersteam2,
-            estiloteam1,
-            estiloteam2
+            estiloofteam1,
+            estiloofteam2,
+            estilodefteam1,
+            estilodefteam2
         });
 
         await newMatch.save();

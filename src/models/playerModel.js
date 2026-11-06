@@ -5,10 +5,11 @@ const playerSchema = mongoose.Schema({
     ref:'team',
     required:true},
     nombre:{type:String, required:true},
+    apellidos:{type:String, required:true},
     posicion:{
         Type:String,
-        enum:['delantero', 'medio','defensa'],
-        required:true,  
+        enum:['Delantero', 'Medio','Defensa'],
+        
     },
     goles:{type:Number, required:true},
     tirospuerta:{type:Number, required:true},
