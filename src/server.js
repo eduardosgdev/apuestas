@@ -1,9 +1,14 @@
 import express from "express";
 import { dataBase } from "./database/db.js";
 import cors from "cors";
+import teamRoutes from "./routes/teamRoutes.js";
 
 const app = express();
-app.use(express.json)
+app.use(express.json())
+
+// rutas
+
+app.use('/teams', teamRoutes);
 
 const port = process.env.PORT || 3000 ;
 app.listen (port)
