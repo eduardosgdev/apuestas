@@ -14,11 +14,11 @@ const matchSchema = mongoose.Schema({
         
     },
     estiloteam1:{type:String,
-    enum:['posesion','bandas','bloquebajo','presion'],
+    enum:['posesion','bandas','bloquebajo','presion','contrataque'],
     required:true
     },
     estiloteam2:{type:String,
-        enum:['posesion','bandas','bloquebajo','presion'],
+        enum:['posesion','bandas','bloquebajo','presion','contrataque'],
         required:true
         },
 
