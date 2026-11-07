@@ -11,6 +11,7 @@ const playerstatsSchema = mongoose.Schema({
         required:true
     },
     goles:{type:Number, required:true, default:0},
+    asistencias:{type:Number, required:true},
     tirospuerta:{type:Number, required:true},
     faltascometidaspartido:{type:Number, required:true},
     faltasrecibidaspartido:{type:Number, required:true}

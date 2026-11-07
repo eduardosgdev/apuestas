@@ -8,7 +8,9 @@ export const createPlayer = async (req, res) => {
             nombre,
             apellidos,
             posicion,
+            encuentros,
             goles,
+            asistencias,
             tirospuerta,
             faltasrecibidas,
             faltascometidas
@@ -20,6 +22,8 @@ export const createPlayer = async (req, res) => {
             apellidos,
             posicion,
             goles,
+            asistencias,
+            encuentros,
             tirospuerta,
             faltasrecibidas,
             faltascometidas

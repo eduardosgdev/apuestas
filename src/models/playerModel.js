@@ -11,7 +11,9 @@ const playerSchema = mongoose.Schema({
         enum:['Delantero', 'Medio','Defensa'],
         
     },
+    encuentros:{type:Number, required:true},
     goles:{type:Number, required:true},
+    asistencias:{type:Number, required:true},
     tirospuerta:{type:Number, required:true},
     faltasrecibidas:{type:Number,required:true},
     faltascometidas:{type:Number,required:true}

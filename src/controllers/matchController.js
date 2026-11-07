@@ -5,6 +5,7 @@ export const createMatch = async (req, res) => {
     try {
         const {
             competicion,
+            temporada,
             team1,
             team2,
             golesteam1,
@@ -26,6 +27,7 @@ export const createMatch = async (req, res) => {
 
         const newMatch = new matchModel({
             competicion,
+            temporada,
             team1,
             team2,
             golesteam1,
@@ -52,3 +54,25 @@ export const createMatch = async (req, res) => {
         });
     }
 };
+
+export const getTeamMatches = async(req,res) =>{
+    try {
+        const {id} = req.params;
+        const matches = await matchModel.find({
+            $or: [
+                { team1: id },
+                { team2: id }
+            ]
+        })
+        .populate('team1')
+        .populate('team2');
+
+        res.status(200).json(matches);
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error al obtener los encuentros',
+            error: error.message
+        });
+    }
+}
