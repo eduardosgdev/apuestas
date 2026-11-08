@@ -7,6 +7,7 @@ import playerRoutes from "./routes/playerRoutes.js";
 import playerStatsRoutes from "./routes/playerStatsRoutes.js";
 
 const app = express();
+app.use(cors())
 app.use(express.json())
 
 // rutas
