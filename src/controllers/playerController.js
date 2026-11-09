@@ -1,6 +1,7 @@
 
 import playerModel from "../models/playerModel.js";
 
+
 export const createPlayer = async (req, res) => {
     try {
         const {
@@ -43,3 +44,33 @@ export const createPlayer = async (req, res) => {
         });
     }
 };
+
+export const teamPlayers = async (req,res) =>{
+    try {
+        const {id} = req.params
+        const players = await playerModel.find(
+           {equipo:id}
+    );
+    console.log(players);
+    if (!players || players.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No se encontraron jugadores para este equipo"
+        });
+    }
+    return res.status(200).json({
+        success: true,
+        total: players.length,
+        players
+    });
+    
+    } catch (error) {
+        console.error("Error obteniendo jugadores:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Error interno del servidor",
+            error: error.message
+        });
+    }
+}
