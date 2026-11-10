@@ -1,5 +1,6 @@
 
 import playerModel from "../models/playerModel.js";
+import mongoose from "mongoose";
 
 
 export const createPlayer = async (req, res) => {
@@ -45,25 +46,27 @@ export const createPlayer = async (req, res) => {
     }
 };
 
-export const teamPlayers = async (req,res) =>{
+export const teamPlayers = async (req, res) => {
     try {
-        const {id} = req.params
-        const players = await playerModel.find(
-           {equipo:id}
-    );
-    console.log(players);
-    if (!players || players.length === 0) {
-        return res.status(404).json({
-            success: false,
-            message: "No se encontraron jugadores para este equipo"
+        const { id } = req.params;
+
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID de equipo no válido"
+            });
+        }
+
+        const players = await playerModel.find({
+            equipo: id
         });
-    }
-    return res.status(200).json({
-        success: true,
-        total: players.length,
-        players
-    });
-    
+
+        return res.status(200).json({
+            success: true,
+            total: players.length,
+            players
+        });
+
     } catch (error) {
         console.error("Error obteniendo jugadores:", error);
 
@@ -73,4 +76,4 @@ export const teamPlayers = async (req,res) =>{
             error: error.message
         });
     }
-}
+};
