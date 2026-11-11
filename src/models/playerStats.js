@@ -16,6 +16,9 @@ const playerstatsSchema = mongoose.Schema({
     faltascometidaspartido:{type:Number, required:true},
     faltasrecibidaspartido:{type:Number, required:true}
 });
-
+playerstatsSchema.index(
+    { player: 1, match: 1 },
+    { unique: true }
+);
 const playerStatsModel = mongoose.model('playerstats',playerstatsSchema);
 export default playerStatsModel;

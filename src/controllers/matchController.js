@@ -8,6 +8,7 @@ import playerModel from "../models/playerModel.js";
 import playerStatsModel from "../models/playerStats.js";
 import teamModel from "../models/teamModels.js";
 
+
 export const createMatch = async (req, res) => {
 
     const {
@@ -22,10 +23,9 @@ export const createMatch = async (req, res) => {
         estiloofteam1,
         estiloofteam2,
         estilodefteam1,
-        estilodefteam2,
-        jugadoresTeam1,
-        jugadoresTeam2
+        estilodefteam2
     } = req.body;
+
 
     // ==========================================
     // 1. VALIDACIONES INICIALES
@@ -41,81 +41,9 @@ export const createMatch = async (req, res) => {
         });
     }
 
-    // Los arrays son opcionales.
-    // Si no llegan, se consideran vacíos.
-
-    const jugadores1 = jugadoresTeam1 === undefined
-        ? []
-        : jugadoresTeam1;
-
-    const jugadores2 = jugadoresTeam2 === undefined
-        ? []
-        : jugadoresTeam2;
-
-    if (
-        !Array.isArray(jugadores1) ||
-        !Array.isArray(jugadores2) ||
-        jugadores1.length > 3 ||
-        jugadores2.length > 3
-    ) {
-        return res.status(400).json({
-            error: "Cada equipo puede registrar entre 0 y 3 jugadores"
-        });
-    }
 
     // ==========================================
-    // 2. REUNIR LOS JUGADORES
-    // ==========================================
-
-    const todosJugadores = [
-        ...jugadores1,
-        ...jugadores2
-    ];
-
-    const idsJugadores = todosJugadores.map(j =>
-        String(j.player)
-    );
-
-    if (
-        idsJugadores.some(id => !mongoose.isValidObjectId(id)) ||
-        new Set(idsJugadores).size !== idsJugadores.length
-    ) {
-        return res.status(400).json({
-            error: "Los IDs de los jugadores deben ser válidos y diferentes"
-        });
-    }
-
-    // ==========================================
-    // 3. VALIDAR ESTADÍSTICAS INDIVIDUALES
-    // ==========================================
-
-    const camposStats = [
-        "goles",
-        "asistencias",
-        "tirospuerta",
-        "faltascometidaspartido",
-        "faltasrecibidaspartido"
-    ];
-
-    for (const jugador of todosJugadores) {
-
-        for (const campo of camposStats) {
-
-            const valor = jugador[campo];
-
-            if (
-                !Number.isFinite(valor) ||
-                valor < 0
-            ) {
-                return res.status(400).json({
-                    error: `Estadística inválida: ${campo}`
-                });
-            }
-        }
-    }
-
-    // ==========================================
-    // 4. VALIDAR GOLES Y CÓRNERS
+    // 2. VALIDAR GOLES Y CÓRNERS
     // ==========================================
 
     const valoresPartido = [
@@ -127,16 +55,19 @@ export const createMatch = async (req, res) => {
 
     if (
         valoresPartido.some(valor =>
-            !Number.isFinite(valor) || valor < 0
+            !Number.isFinite(valor) ||
+            valor < 0 ||
+            !Number.isInteger(valor)
         )
     ) {
         return res.status(400).json({
-            error: "Los goles y córners deben ser números no negativos"
+            error: "Los goles y córners deben ser números enteros no negativos"
         });
     }
 
+
     // ==========================================
-    // 5. INICIAR TRANSACCIÓN
+    // 3. INICIAR TRANSACCIÓN
     // ==========================================
 
     const session = await mongoose.startSession();
@@ -147,8 +78,9 @@ export const createMatch = async (req, res) => {
 
         await session.withTransaction(async () => {
 
+
             // ==========================================
-            // 6. COMPROBAR QUE EXISTEN LOS EQUIPOS
+            // 4. COMPROBAR QUE EXISTEN LOS EQUIPOS
             // ==========================================
 
             const equipos = await teamModel.find({
@@ -161,69 +93,9 @@ export const createMatch = async (req, res) => {
                 throw new Error("Uno o ambos equipos no existen");
             }
 
-            // ==========================================
-            // 7. BUSCAR JUGADORES
-            // ==========================================
-
-            const jugadores = await playerModel.find({
-                _id: {
-                    $in: idsJugadores
-                }
-            }).session(session);
-
-            if (jugadores.length !== idsJugadores.length) {
-                throw new Error("Uno o varios jugadores no existen");
-            }
-
-            const jugadoresMap = new Map(
-                jugadores.map(j => [
-                    String(j._id),
-                    j
-                ])
-            );
 
             // ==========================================
-            // 8. COMPROBAR PERTENENCIA TEAM1
-            // ==========================================
-
-            for (const jugador of jugadores1) {
-
-                const jugadorDB = jugadoresMap.get(
-                    String(jugador.player)
-                );
-
-                if (
-                    !jugadorDB ||
-                    String(jugadorDB.equipo) !== String(team1)
-                ) {
-                    throw new Error(
-                        "Un jugador local no pertenece al equipo local"
-                    );
-                }
-            }
-
-            // ==========================================
-            // 9. COMPROBAR PERTENENCIA TEAM2
-            // ==========================================
-
-            for (const jugador of jugadores2) {
-
-                const jugadorDB = jugadoresMap.get(
-                    String(jugador.player)
-                );
-
-                if (
-                    !jugadorDB ||
-                    String(jugadorDB.equipo) !== String(team2)
-                ) {
-                    throw new Error(
-                        "Un jugador visitante no pertenece al equipo visitante"
-                    );
-                }
-            }
-
-            // ==========================================
-            // 10. CREAR EL ENCUENTRO
+            // 5. CREAR EL ENCUENTRO
             // ==========================================
 
             const [match] = await matchModel.create(
@@ -251,75 +123,18 @@ export const createMatch = async (req, res) => {
 
             resultadoMatch = match;
 
-            // ==========================================
-            // 11. CREAR PLAYERSTATS
-            // ==========================================
-
-            if (todosJugadores.length > 0) {
-
-                const estadisticasJugadores = todosJugadores.map(j => ({
-
-                    player: j.player,
-                    match: match._id,
-
-                    goles: j.goles,
-                    asistencias: j.asistencias,
-                    tirospuerta: j.tirospuerta,
-
-                    faltascometidaspartido:
-                        j.faltascometidaspartido,
-
-                    faltasrecibidaspartido:
-                        j.faltasrecibidaspartido
-
-                }));
-
-                await playerStatsModel.insertMany(
-                    estadisticasJugadores,
-                    { session }
-                );
-            }
 
             // ==========================================
-            // 12. ACTUALIZAR ESTADÍSTICAS PLAYER
-            // ==========================================
-
-            for (const jugador of todosJugadores) {
-
-                await playerModel.updateOne(
-                    {
-                        _id: jugador.player
-                    },
-                    {
-                        $inc: {
-
-                            encuentros: 1,
-                            goles: jugador.goles,
-                            asistencias: jugador.asistencias,
-                            tirospuerta: jugador.tirospuerta,
-
-                            faltascometidas:
-                                jugador.faltascometidaspartido,
-
-                            faltasrecibidas:
-                                jugador.faltasrecibidaspartido
-
-                        }
-                    },
-                    { session }
-                );
-            }
-
-            // ==========================================
-            // 13. DETERMINAR RESULTADO
+            // 6. DETERMINAR RESULTADO
             // ==========================================
 
             const ganaTeam1 = golesteam1 > golesteam2;
             const ganaTeam2 = golesteam2 > golesteam1;
             const empate = golesteam1 === golesteam2;
 
+
             // ==========================================
-            // 14. ACTUALIZAR TEAM1
+            // 7. ACTUALIZAR TEAM1
             // ==========================================
 
             await teamModel.updateOne(
@@ -345,8 +160,9 @@ export const createMatch = async (req, res) => {
                 { session }
             );
 
+
             // ==========================================
-            // 15. ACTUALIZAR TEAM2
+            // 8. ACTUALIZAR TEAM2
             // ==========================================
 
             await teamModel.updateOne(
@@ -374,8 +190,9 @@ export const createMatch = async (req, res) => {
 
         });
 
+
         // ==========================================
-        // 16. RESPUESTA EXITOSA
+        // 9. RESPUESTA EXITOSA
         // ==========================================
 
         return res.status(201).json({
@@ -384,14 +201,10 @@ export const createMatch = async (req, res) => {
 
             match: resultadoMatch,
 
-            jugadoresRegistrados: todosJugadores.length,
-
-            jugadoresTeam1: jugadores1.length,
-            jugadoresTeam2: jugadores2.length,
-
             equiposActualizados: 2
 
         });
+
 
     } catch (error) {
 
@@ -410,7 +223,9 @@ export const createMatch = async (req, res) => {
         await session.endSession();
 
     }
+
 };
+
 
 
 

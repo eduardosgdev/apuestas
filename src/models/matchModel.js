@@ -54,8 +54,11 @@ const matchSchema = mongoose.Schema({
     cornersteam2: {
             type: Number,
             default: 0
+        },
+     estadisticasRegistradas: {
+            type: Boolean,
+            default: false
         }
-    
     
 });
 
