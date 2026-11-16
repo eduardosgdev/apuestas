@@ -9,7 +9,7 @@ import playerStatsRoutes from "./routes/playerStatsRoutes.js";
 const app = express();
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://predictpr0z.netlify.app'
+    'https://predictpr0z.netlify.app/'
 ];
 
 app.use(cors({
