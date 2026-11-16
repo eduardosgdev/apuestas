@@ -7,7 +7,20 @@ import playerRoutes from "./routes/playerRoutes.js";
 import playerStatsRoutes from "./routes/playerStatsRoutes.js";
 
 const app = express();
-app.use(cors())
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://tu-proyecto.netlify.app'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
+    }
+}));
 app.use(express.json())
 
 // rutas
