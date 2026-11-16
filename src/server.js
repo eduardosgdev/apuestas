@@ -8,7 +8,7 @@ import playerStatsRoutes from "./routes/playerStatsRoutes.js";
 
 const app = express();
 const allowedOrigins = [
-    'http://localhost:5173',
+    'https://0.0.0.0',
     'https://predictpr0z.netlify.app/'
 ];
 
