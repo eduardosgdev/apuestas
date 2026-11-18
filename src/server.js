@@ -1,6 +1,8 @@
 import express from "express";
 import { dataBase } from "./database/db.js";
 import cors from "cors";
+
+import userRoutes from "./routes/userRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
 import playerRoutes from "./routes/playerRoutes.js";
@@ -25,6 +27,7 @@ app.use(express.json())
 
 // rutas
 
+app.use('/users', userRoutes)
 app.use('/teams', teamRoutes);
 app.use('/matchs', matchRoutes);
 app.use('/players' ,playerRoutes)
