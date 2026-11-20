@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
     },
     estadocuenta: {
         type: String,
-        enum: ['activo', 'suspendido', 'bloqueado'],
+        enum: ['activo', 'bloqueado'],
         default: 'bloqueado'
       },
     

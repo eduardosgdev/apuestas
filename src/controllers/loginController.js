@@ -32,7 +32,7 @@ export const loginUser = async (req, res) => {
         }
 
         // Comprobar estado de cuenta
-        if (user.estadocuenta !== "activo") {
+        if (!["activo", "bloqueado"].includes(user.estadocuenta)) {
             return res.status(403).json({
                 success: false,
                 message: "Tu cuenta no está activa"
