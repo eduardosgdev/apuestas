@@ -43,7 +43,8 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign(
             {
                 id: user._id,
-                rol: user.rol
+                rol: user.rol,
+                estado:user.estadocuenta
             },
             process.env.JWT_SECRET,
             {
@@ -54,15 +55,8 @@ export const loginUser = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Inicio de sesión correcto",
-            token,
-            user: {
-                _id: user._id,
-                nombre: user.nombre,
-                apellidos: user.apellidos,
-                telefono: user.telefono,
-                rol: user.rol,
-                estadocuenta: user.estadocuenta
-            }
+            token
+            
         });
 
     } catch (error) {
