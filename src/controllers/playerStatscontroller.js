@@ -237,3 +237,26 @@ export const getPlayerStatsByTeamMatches = async (req, res) => {
         });
     }
 };
+
+
+export const getPlayerStatsByMatch = async (req, res) => {
+    try {
+        const { matchId } = req.params;
+
+        const estadisticas = await playerStatsModel.find({
+            match: matchId
+        })
+        .select('player goles asistencias tirospuerta faltascometidaspartido faltasrecibidaspartido');
+
+        return res.status(200).json({
+            total: estadisticas.length,
+            estadisticas
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener las estadísticas del encuentro",
+            error: error.message
+        });
+    }
+};
