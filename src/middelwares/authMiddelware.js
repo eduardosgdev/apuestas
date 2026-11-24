@@ -9,7 +9,6 @@ export const authMiddleware = (requireAdmin = false) => {
     return async (req, res, next) => {
         try {
 
-            c
 
             // Obtener token
             const authHeader = req.headers.authorization;
