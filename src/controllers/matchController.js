@@ -1,11 +1,6 @@
 
-
-
 import mongoose from "mongoose";
-
 import matchModel from "../models/matchModel.js";
-import playerModel from "../models/playerModel.js";
-import playerStatsModel from "../models/playerStats.js";
 import teamModel from "../models/teamModels.js";
 
 
@@ -227,9 +222,6 @@ export const createMatch = async (req, res) => {
 };
 
 
-
-
-
 export const getTeamMatches = async(req,res) =>{
     try {
         const {id} = req.params;
@@ -251,3 +243,78 @@ export const getTeamMatches = async(req,res) =>{
         });
     }
 }
+
+
+export const getMatchBetweenTeams = async (req, res) => {
+
+    try {
+
+        const { team1, team2 } = req.body;
+
+
+        // ==========================================
+        // 1. VALIDACIONES INICIALES
+        // ==========================================
+
+        if (
+            !mongoose.isValidObjectId(team1) ||
+            !mongoose.isValidObjectId(team2) ||
+            String(team1) === String(team2)
+        ) {
+            return res.status(400).json({
+                error: "Los IDs de los equipos no son válidos"
+            });
+        }
+
+
+        // ==========================================
+        // 2. BUSCAR ENCUENTROS
+        // ==========================================
+
+        const matches = await matchModel.find({
+
+            team1: new mongoose.Types.ObjectId(team1),
+            team2: new mongoose.Types.ObjectId(team2)
+
+        })
+        .populate('team1')
+        .populate('team2')
+        .sort({ createdAt: -1 });
+
+
+        // ==========================================
+        // 3. COMPROBAR RESULTADOS
+        // ==========================================
+
+        if (matches.length === 0) {
+            return res.status(404).json({
+                mensaje: "No se encontraron encuentros"
+            });
+        }
+
+
+        // ==========================================
+        // 4. RESPUESTA EXITOSA
+        // ==========================================
+
+        return res.status(200).json({
+
+            mensaje: "Encuentros encontrados correctamente",
+            total: matches.length,
+            matches
+
+        });
+
+
+    } catch (error) {
+
+        console.error("ERROR AL BUSCAR ENCUENTROS:", error);
+
+        return res.status(500).json({
+            error: error.message || "Error al obtener los encuentros"
+        });
+
+    }
+
+};
+
