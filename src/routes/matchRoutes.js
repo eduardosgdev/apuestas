@@ -4,7 +4,7 @@ import { authMiddleware } from "../middelwares/authMiddelware.js";
 
 const matchRoutes = express.Router();
 
-matchRoutes.post('/',createMatch)
+matchRoutes.post('/', authMiddleware(true), createMatch);
 matchRoutes.get('/teammatch/:id', getTeamMatches)
 matchRoutes.get('/matchteams', getMatchBetweenTeams)
 
